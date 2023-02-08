@@ -9,6 +9,9 @@
 #include "db_parser.h"
 #include "product_parser.h"
 #include "util.h"
+#include "mydatastore.h"
+#include <map>
+#include "user.h"
 
 using namespace std;
 struct ProdNameSorter {
@@ -29,7 +32,8 @@ int main(int argc, char* argv[])
      * Declare your derived DataStore object here replacing
      *  DataStore type to your derived type
      ****************/
-    DataStore ds;
+    MyDataStore ds;
+    std::map<User*, std::vector<Product*>> cartMap;
 
 
 
@@ -99,6 +103,55 @@ int main(int argc, char* argv[])
                 }
                 done = true;
             }
+            else if (cmd == "ADD"){
+                string term;
+                int hitIndex;
+                ss >> term;
+                ss >> hitIndex;
+                //Check for invalid username
+                if(ds.userNames_.find(term) == ds.userNames_.end()){
+                    cout << "Invalid Username" << endl;
+                }
+                else if(!hits[hitIndex]){
+                    cout << "Invalid Product Index" << endl;
+                }
+                //Check for invalid hit index
+                //Get the user from our user set 
+                User* current = ds.searchUser(term);
+                cartMap[current].push_back(hits[hitIndex]);
+
+
+                //Then map that user to the product being added 
+
+
+            }
+            else if (cmd == "VIEWCART"){
+                string uName;
+                User* current = ds.searchUser(uName);
+                ss >> uName;
+                for(int i = cartMap[current].size() -1; i >=0; i--){
+                    cout << cartMap[current][i] << endl;
+                }
+
+            }
+            else if(cmd == "BUYCART"){
+                string uName;
+                User* current = ds.searchUser(uName);
+                ss >> uName;
+                std::vector<Product*> currentCart = cartMap[current];
+                for(int i = currentCart.size() -1; i >=0; i--){
+                    if(currentCart[i]->getQty() > 0){
+                        if(current->getBalance() > currentCart[i]->getPrice()){
+                            currentCart[i]->subtractQty(1);
+                            ds.updateProds(currentCart[i], 1);
+                            current->deductAmount(currentCart[i]->getPrice());
+                            ds.updateUsers(current, currentCart[i]->getPrice());
+                            
+                        }
+                    }
+                }
+            }
+            
 	    /* Add support for other commands here */
 
 

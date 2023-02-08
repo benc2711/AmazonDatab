@@ -13,7 +13,16 @@
 template <typename T>
 std::set<T> setIntersection(std::set<T>& s1, std::set<T>& s2)
 {
-
+//Iterate over the set and return a new set with the similar set values 
+//Below for loop from lecture slides
+    std::set<T> retval;
+    std::set<std::string>::iterator it;
+    for(it=s1.begin();it != s1.end();it++){
+        if(s2.find(*it) != s2.end()){
+            retval.insert(*it);
+        }
+    }
+    return retval;
 
 
 
@@ -23,7 +32,13 @@ template <typename T>
 std::set<T> setUnion(std::set<T>& s1, std::set<T>& s2)
 {
 
-
+    std::set<std::string>::iterator it;
+    for(it=s2.begin(); it != s2.end(); it++){
+        if(s1.find(*it) == s1.end()){
+            s1.insert(*it);
+        }
+    }
+    return s1;
 
 
 
