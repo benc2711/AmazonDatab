@@ -6,6 +6,11 @@
 #include <vector>
 #include <algorithm>
 #include <string.h>
+#include "util.h"
+#include <iomanip>
+#include <math.h>
+
+
 
 
 Book::Book(const std::string author, std::string ISBN,  const std::string name, double price, int qty) : 
@@ -16,11 +21,13 @@ Book::Book(const std::string author, std::string ISBN,  const std::string name, 
 }
 
 std::set<std::string> Book::keywords() const{
-    std::set<std::string> retval;
-    retval.insert(author_);
-    retval.insert(Product::getName());
-    retval.insert(ISBN_);
-    return retval;
+    std::set<std::string> toWords;
+    std::set<std::string> toWordsG;
+    toWords = parseStringToWords(Product::getName());
+    toWordsG = parseStringToWords(author_);
+    toWords.insert(ISBN_);
+
+    return setUnion(toWordsG, toWords);
 }
 
 bool Book::isMatch(std::vector<std::string>& searchTerms) const{
@@ -49,14 +56,14 @@ bool Book::isMatch(std::vector<std::string>& searchTerms) const{
 std::string Book::displayString() const{
     std::string retval;
     std::string d = std::to_string(Product::getPrice());
-    retval = "Name: " + Product::getName() + " Price: " + d + " Quantity " + std::to_string(Product::getQty()) + " Catagory: Book " + "Author: " + author_ + "ISBN: " + ISBN_;
+    retval = Product::getName() + "\nAuthor: " + author_ + " ISBN: " + ISBN_ + "\n" + d + " " + std::to_string(Product::getQty()) + " left.";
     return retval;
 }
 
 void Book::dump(std::ostream& os) const{
-    std::string retval;
-    std::string d = std::to_string(Product::getPrice());
-    os << "book\n"  << Product::getName()  << "\n" << d  << "\n" << std::to_string(Product::getQty()) << "\n" << ISBN_ << "\n" << author_ << "\n";
+    Product::dump(os);
+    os << ISBN_ << std::endl;
+    os << author_ << std::endl;
     
 
 }

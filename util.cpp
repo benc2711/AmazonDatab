@@ -5,6 +5,8 @@
 #include "util.h"
 #include <set>
 #include <string>
+#include <cctype>
+
 
 using namespace std;
 std::string convToLower(std::string src)
@@ -21,33 +23,37 @@ std::set<std::string> parseStringToWords(string rawWords)
   stringstream ss(rawWords);
   string word;
   while(ss >> word){
-    if (rawWords.size() > 2){
-    string lowerRaw = convToLower(word);
-    bool containsPunc = false;
-    for(unsigned int i =0; i< lowerRaw.size(); i++){
-      if (lowerRaw[i] > 122 || lowerRaw[i]< 97){
-        containsPunc = true;
+    string leftWord;
+    string rightWord;
+    bool punc = false;
+    
+    
+    for(unsigned int i =0; i< word.size();i++){
+        if(ispunct(word[i]) != 0){
+          leftWord = word.substr(0, i);
+          rightWord = word.substr(i+1);
+          punc = true;
+        
+          if(leftWord.size() > 1){
+            retval.insert(leftWord);
+            
+          }
+          if(rightWord.size() > 1){
+            retval.insert(rightWord);
+            
+          }
+        }
       }
-    }
-    std::string left;
-    std::string right;
-    if(containsPunc){
-      left = ltrim(rawWords);
-      right = rtrim(rawWords);
-    }
-    if(left.size() > 1){
-      retval.insert(left);
-    }
-    if(right.size() > 1){
-      retval.insert(right);
-    }
-  }
+    if(!punc){
+          retval.insert(word);
+        }
   
     
     
   }
-}
 
+  return retval;
+}
 
 /**************************************************
  * COMPLETED - You may use the following functions

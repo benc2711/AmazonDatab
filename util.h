@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <set>
+#include "product.h"
 
 
 /** Complete the setIntersection and setUnion functions below
@@ -16,7 +17,15 @@ std::set<T> setIntersection(std::set<T>& s1, std::set<T>& s2)
 //Iterate over the set and return a new set with the similar set values 
 //Below for loop from lecture slides
     std::set<T> retval;
-    std::set<std::string>::iterator it;
+    typename std::set<T>::iterator it;
+    // std::set<std::string>::iterator its;
+
+    // for(its=s1.begin();its != s1.end();its++){
+    //     std::cout << (*its) << std::endl;
+    // }
+    // for(it=s2.begin();it != s2.end();it++){
+    //     std::cout << (*it) << std::endl;
+    // }
     for(it=s1.begin();it != s1.end();it++){
         if(s2.find(*it) != s2.end()){
             retval.insert(*it);
@@ -32,7 +41,7 @@ template <typename T>
 std::set<T> setUnion(std::set<T>& s1, std::set<T>& s2)
 {
 
-    std::set<std::string>::iterator it;
+    typename std::set<T>::iterator it;
     for(it=s2.begin(); it != s2.end(); it++){
         if(s1.find(*it) == s1.end()){
             s1.insert(*it);

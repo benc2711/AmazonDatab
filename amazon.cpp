@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
      *  DataStore type to your derived type
      ****************/
     MyDataStore ds;
-    std::map<User*, std::vector<Product*>> cartMap;
+    
 
 
 
@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
     DBParser parser;
     parser.addSectionParser("products", productSectionParser);
     parser.addSectionParser("users", userSectionParser);
-
+    // cout << "MADE IT HERE " << endl;
     // Now parse the database to populate the DataStore
     if( parser.parse(argv[1], ds) ) {
         cerr << "Error parsing!" << endl;
@@ -82,6 +82,7 @@ int main(int argc, char* argv[])
                     terms.push_back(term);
                 }
                 hits = ds.search(terms, 0);
+                // cout << "Hits size: " << hits.size() << endl;
                 displayProducts(hits);
             }
             else if ( cmd == "OR" ) {
@@ -92,6 +93,8 @@ int main(int argc, char* argv[])
                     terms.push_back(term);
                 }
                 hits = ds.search(terms, 1);
+                // std::cout << "HITS INDEX FIRST NAME: " << hits[0]->getName() << std::endl;
+                // cout << "Hits size: " << hits.size() << endl;
                 displayProducts(hits);
             }
             else if ( cmd == "QUIT") {
@@ -104,21 +107,19 @@ int main(int argc, char* argv[])
                 done = true;
             }
             else if (cmd == "ADD"){
-                string term;
+                string username;
                 int hitIndex;
-                ss >> term;
+                ss >> username;
                 ss >> hitIndex;
                 //Check for invalid username
-                if(ds.userNames_.find(term) == ds.userNames_.end()){
-                    cout << "Invalid Username" << endl;
-                }
-                else if(!hits[hitIndex]){
+                
+                if(!hits[hitIndex-1]){
                     cout << "Invalid Product Index" << endl;
                 }
                 //Check for invalid hit index
                 //Get the user from our user set 
-                User* current = ds.searchUser(term);
-                cartMap[current].push_back(hits[hitIndex]);
+                ds.addtocart(username, hits[hitIndex-1]);
+                cout << "Added to cart" << endl;
 
 
                 //Then map that user to the product being added 
@@ -127,29 +128,14 @@ int main(int argc, char* argv[])
             }
             else if (cmd == "VIEWCART"){
                 string uName;
-                User* current = ds.searchUser(uName);
                 ss >> uName;
-                for(int i = cartMap[current].size() -1; i >=0; i--){
-                    cout << cartMap[current][i] << endl;
-                }
-
+                ds.viewcart(uName);
+                
             }
             else if(cmd == "BUYCART"){
                 string uName;
-                User* current = ds.searchUser(uName);
                 ss >> uName;
-                std::vector<Product*> currentCart = cartMap[current];
-                for(int i = currentCart.size() -1; i >=0; i--){
-                    if(currentCart[i]->getQty() > 0){
-                        if(current->getBalance() > currentCart[i]->getPrice()){
-                            currentCart[i]->subtractQty(1);
-                            ds.updateProds(currentCart[i], 1);
-                            current->deductAmount(currentCart[i]->getPrice());
-                            ds.updateUsers(current, currentCart[i]->getPrice());
-                            
-                        }
-                    }
-                }
+                ds.buycart(uName);
             }
             
 	    /* Add support for other commands here */

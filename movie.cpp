@@ -6,6 +6,9 @@
 #include <vector>
 #include <algorithm>
 #include <string.h>
+#include "util.h"
+#include <iomanip>
+#include <math.h>
 
 
 Movie::Movie(const std::string genre, const std::string name, double price, int qty, std::string rating):
@@ -16,10 +19,12 @@ Movie::Movie(const std::string genre, const std::string name, double price, int 
 } 
 
 std::set<std::string> Movie::keywords() const{
-    std::set<std::string> retval;
-    retval.insert(genre_);
-    retval.insert(Product::getName());
-    return retval;
+    std::set<std::string> toWords;
+    std::set<std::string> toWordsG;
+    toWords = parseStringToWords(Product::getName());
+    toWordsG = parseStringToWords(genre_);
+    return setUnion(toWords, toWordsG);
+    
 }
 
 bool Movie::isMatch(std::vector<std::string>& searchTerms) const{
@@ -44,15 +49,16 @@ bool Movie::isMatch(std::vector<std::string>& searchTerms) const{
 
 std::string Movie::displayString() const{
     std::string retval;
+    // std::cout << "MADE HERE " << std::endl;
     std::string d = std::to_string(Product::getPrice());
-    retval = "Name: " + Product::getName() + " Price: " + d + " Quantity " + std::to_string(Product::getQty()) + " Catagory: Movie " + "Genre: " + genre_ ;
+    retval = Product::getName() + "\nGenre: " + genre_ + " Rating: " + rating_ + "\n" + d + " " + std::to_string(Product::getQty()) + " left.";
     return retval;
 }
 
 void Movie::dump(std::ostream& os) const{
-    std::string retval;
-    std::string d = std::to_string(Product::getPrice());
-    os << "movie\n"  << Product::getName()  << "\n" << d  << "\n" << std::to_string(Product::getQty()) << "\n" << genre_ << "\n" << rating_ << "\n";
+    Product::dump(os);
+    os << genre_ << std::endl;
+    os << rating_ << std::endl;
     
 
 }
